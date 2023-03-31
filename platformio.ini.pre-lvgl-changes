@@ -1,0 +1,112 @@
+; PlatformIO Project Configuration File
+;
+;   Build options: build flags, source filter
+;   Upload options: custom upload port, speed and extra flags
+;   Library options: dependencies, extra library storages
+;   Advanced options: extra scripting
+;
+; Please visit documentation for the other options and examples
+; https://docs.platformio.org/page/projectconf.html
+
+[platformio]
+default_envs = emulator_64bits_arm
+
+[env]
+build_flags = 
+	-D LV_LVGL_H_INCLUDE_SIMPLE
+	-D SDL_HOR_RES=320
+	-D SDL_VER_RES=240
+	-D LV_FONT_MONTSERRAT_8=1
+	-D LV_FONT_MONTSERRAT_10=1
+	-D LV_FONT_MONTSERRAT_12=1
+	-D LV_FONT_MONTSERRAT_14=1
+	-D LV_FONT_MONTSERRAT_16=1
+	-D LV_FONT_MONTSERRAT_18=1
+	-D LV_FONT_MONTSERRAT_20=1
+	-D LV_FONT_MONTSERRAT_22=1
+	-D LV_FONT_MONTSERRAT_24=1
+	-D LV_FONT_MONTSERRAT_32=1
+lib_deps = 
+;	../LVGLPlusPlus
+	https://github.com/bobwolff68/LVGLPlusPlus.git
+lib_archive = no
+ 
+[env:esp32dev]
+platform = espressif32
+board = esp32dev
+framework = arduino
+monitor_speed = 115200
+upload_speed = 921600
+lib_deps = 
+	${env.lib_deps}
+	bodmer/TFT_eSPI
+build_flags = 
+	${env.build_flags}
+	-D LV_CONF_INCLUDE_SIMPLE
+	; While it seems unnecessary, LVGL will fail including lv_conf.h without "-I src" here.
+	-I src
+	; This LV_DRV_NO_CONF is only necessary because LVGL as a library is including the lv_drivers both for emulation and esp32 targets.
+	-D LV_DRV_NO_CONF
+	-D LV_THEME_DEFAULT_DARK=0
+	  
+	-D TFT_BRIGHTNESS=255
+	; Please set these to your particular pin numbers - these are for TFT_eSPI from Bodmer
+	-D TFT_MISO=19
+	-D TFT_MOSI=23
+	-D TFT_SCLK=18
+	-D TFT_DC=4
+	-D TFT_CS=2
+	-D TFT_BL=5
+	-D TOUCH_CS=32
+	-D TFT_RST=-1
+	
+	-D USER_SETUP_LOADED=1
+	-D LOAD_GLCD=1
+	-D LOAD_FONT2=1
+	-D LOAD_FONT4=1
+	-D SPI_FREQUENCY=33000000
+	-D SPI_READ_FREQUENCY=20000000
+	-D SPI_TOUCH_FREQUENCY=2500000
+	
+	-D ILI9341_DRIVER=1
+	-D MMB_ROTATION=1
+build_src_filter = 
+	+<*>
+	+${env.build_src_filter}
+	+<../hal/main_esp32.cpp>
+ 
+[env:emulator_64bits_arm]
+platform = native@^1.1.3
+; build script may no longer be necessary - purpose seems to be:
+;   pass -m32 flag to linker
+;   allow a way to execute the native executable via the 'upload' button
+;extra_scripts = support/sdl2_build_extra.py
+build_flags = 
+	${env.build_flags}
+	-g
+	-arch arm64
+	-std=c++11
+
+	-D LV_CONF_SKIP
+	-D LV_DRV_NO_CONF
+
+	-D USE_SDL
+	-D SDL_ZOOM=2
+	-D SDL_INCLUDE_PATH="\"SDL2/SDL.h\""
+	-I /opt/homebrew/include
+	-L /opt/homebrew/lib
+	-lSDL2
+
+	-D LV_USE_LOG=1
+	-D LV_LOG_PRINTF=1
+	-D LV_LOG_LEVEL=LV_LOG_LEVEL_WARN
+lib_deps = 
+	${env.lib_deps}
+; No longer need lv_drivers line here if LVGLPlusPlus uses it as dependency.
+; However, must then define LV_DRV_NO_CONF in both build flavors.
+; Ultimately this means some extraneous building in esp32 mode, but a cleaner build setup.
+;	lv_drivers=https://github.com/lvgl/lv_drivers/archive/refs/tags/v8.2.0.zip
+build_src_filter = 
+	+<*>
+	+${env.build_src_filter}
+	+<../hal/main_emulator.cpp>
