@@ -28,36 +28,6 @@
 #include "main_header.h"
 #include "Widgets.h"
 
-lv_obj_t* pSetupScreen=nullptr;
-lv_obj_t* pMainScreen=nullptr;
-
-
-////////////////////////////////////////
-//
-//  SETUP SCREEN ITEMS - JUST A FEW
-//
-////////////////////////////////////////
-
-class ExitSetupButton : public lvppButton {
-public:
-    ExitSetupButton(lv_obj_t* parent=nullptr) : lvppButton("S-exit", "Exit", parent) {
-        align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);
-    };
-protected:
-    void onClicked(void) {
-        // Time to swap out my screen for my parent.
-        lv_scr_load_anim(pMainScreen, LV_SCR_LOAD_ANIM_OUT_RIGHT, 500, 0, false);
-   }
-};
-
-class HelloLabel : public lvppLabel {
-public:
-    HelloLabel(lv_obj_t* parent=nullptr) : lvppLabel("Hello", "Setup Screen", parent) {
-        align(LV_ALIGN_TOP_MID, 0, 3);
-        setText("Setup Screen Example");
-    };
-};
-
 
 
 ////////////////////////////////////////
@@ -67,59 +37,97 @@ public:
 ////////////////////////////////////////
 
 void instantiateWidgets(void) {
-    // WARNING: Be sure to do this PRIOR to anyone calling lv_scr_load()
-    pMainScreen = lv_scr_act();
+    pScreenMain = new lvppScreen(lv_scr_act());
+
+    static BackgroundAreas background;
+
+    static lvppButton setupButton("Setup", LV_SYMBOL_SETTINGS" Setup");
+    setupButton.align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);
+    setupButton.setCallbackOnClicked([]() -> void {
+        // Time to load the setup screen.
+        if (pScreenSetup) {
+            pScreenSetup->ActivateScreen(500, LV_SCR_LOAD_ANIM_OVER_LEFT);
+        }
+    });
+
+    pScreenMain->AddObject(&setupButton);
+
+    static lvppBar fullnessBar("H2OLevel");
+    fullnessBar.setSize(13, 80);
+    fullnessBar.align(LV_ALIGN_TOP_RIGHT, -19, 20);
+    fullnessBar.setRange(0,100);
+    fullnessBar.setValueLabelFormat("%d%%");
+    fullnessBar.enableValueLabel(3, 17, LV_ALIGN_BOTTOM_MID);
+    fullnessBar.setValue(20);
+    fullnessBar.setAdjText("Water", 0, -50);
+
+    pScreenMain->AddObject(&fullnessBar);
 
     printf("size of buffer for TRUE_COLOR:%d\n", LV_CANVAS_BUF_SIZE_TRUE_COLOR(320,240));
     printf("size of buffer for INDEXED 8-bit:%d\n", LV_CANVAS_BUF_SIZE_INDEXED_8BIT(320,240));
     printf("size of buffer for INDEXED 4-bit:%d\n", LV_CANVAS_BUF_SIZE_INDEXED_4BIT(320,240));
 
-    static BackgroundAreas background;
+    static lvppButton plus5("+5Min", "  Add\n+1 Min");
+    plus5.setSize(70, 55);
+    plus5.align(LV_ALIGN_TOP_MID, 0, 7);
+    plus5.setFontSize(20);
+    plus5.setBGColor(lv_palette_lighten(LV_PALETTE_GREEN, 1));
+    plus5.setCallbackOnClicked([]() -> void {
+        assert(pTheBrain);
+        pTheBrain->AddSeconds(60);
+    });
 
-    pFull = new FullnessBar;
-    static H2OFullnessLabel waterLabel;
+    pScreenMain->AddObject(&plus5);
 
-    static PlusTime plus5;
+    static lvppCycleButton lights("Lights");
+    lights.setSize(61, 28);
+    lights.align(LV_ALIGN_TOP_LEFT, 6, 35);
+    lights.addOptions(LV_SYMBOL_POWER " Off");
+    lights.addOptions(LV_SYMBOL_SHUFFLE " Slow");
+    lights.addOptions(LV_SYMBOL_SHUFFLE " Fast");
+    lights.setAdjText("Lights", 0, -24);
+
+    pScreenMain->AddObject(&lights);
+
+    static lvppDropdown dropCycle("DropCycle");
+    dropCycle.setSize(148, 42);
+    dropCycle.align(LV_ALIGN_BOTTOM_LEFT, 5, -40);
+    dropCycle.setFontSize(22);
+    dropCycle.setBGColor(lv_palette_darken(LV_PALETTE_BLUE, 1));
+    dropCycle.addOptions(LV_SYMBOL_REFRESH " All On\n" LV_SYMBOL_REFRESH " 2 Secs\n" LV_SYMBOL_REFRESH " 3 Secs\n" LV_SYMBOL_REFRESH " 4 Secs");
+    dropCycle.setDropdownDirection(LV_DIR_TOP);
+    dropCycle.setAdjText("Cycle Pulsing", 0, -32);
+
+    pScreenMain->AddObject(&dropCycle);
 
     pTimeStatus = new TimeStatus;
-
-    static LEDControl leds;
-    static LEDLabel ledLabel;
-
-    pCycleControl = new CycleControl;
-    static CPLabel cpLabel;
+    pScreenMain->AddObject(pTimeStatus);
 
     pTempGauge = new TempGauge;
-    static SetupControl setup;
+    pScreenMain->AddObject(pTempGauge);
 
+////////////////////////////////////////
 //
-// SETUP SCREEN
+//  SETUP SCREEN ITEMS - JUST A FEW
 //
-    pSetupScreen = lv_obj_create(NULL);
+////////////////////////////////////////
+    pScreenSetup = new lvppScreen();
     
-    static ExitSetupButton exit(pSetupScreen);
-    static HelloLabel hello(pSetupScreen);
-}
+    static lvppLabel hello("title", "Setup Screen Example");
+    hello.align(LV_ALIGN_TOP_MID, 0, 3);
 
-PlusTime::PlusTime(void) : lvppButton("+5Min", "  Add\n+1 Min") {
-    setSize(70, 55);
-    align(LV_ALIGN_TOP_MID, 0, 7);
-    setFontSize(20);
+    pScreenSetup->AddObject(&hello);
 
-    lv_style_set_bg_color(&style_obj, lv_palette_lighten(LV_PALETTE_GREEN, 1));
-    lv_obj_add_style(obj, &style_obj, 0);
+    static lvppButton exitSetupButton("ExitSetup", "Exit");
+    exitSetupButton.align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);
+    exitSetupButton.setCallbackOnClicked([]() -> void {
+        // Time to load the main screen again.
+        pScreenMain->ActivateScreen(500, LV_SCR_LOAD_ANIM_OVER_RIGHT);
+    });
 
-}
-
-PlusTime::~PlusTime() {
+    pScreenSetup->AddObject(&exitSetupButton);
 
 }
-
-void PlusTime::onClicked(void) {
-    assert(pTheBrain);
-    pTheBrain->AddSeconds(60);
-}
-
 
 
 ////////////////////////////////////////
@@ -167,148 +175,6 @@ void TimeStatus::setText(const char* pText) {
     }
 }
 
-
-
-////////////////////////////////////////
-//
-//  L E D C o n t r o l
-//
-////////////////////////////////////////
-
-LEDControl::LEDControl() : lvppCycleButton("LEDControl") {
-    setSize(61, 28);
-    align(LV_ALIGN_OUT_LEFT_TOP, 4, 25);
-
-    styles.push_back(LV_SYMBOL_POWER " Off");
-    styles.push_back(LV_SYMBOL_SHUFFLE " Slow");
-    styles.push_back(LV_SYMBOL_SHUFFLE " Fast");
-
-    clearOptions();
-    addOptionsFromVector(styles);
-
-    currentIndex = (uint16_t)0;
-    setText(options[currentIndex].c_str());
-
-    printf("LEDControl constructor: currentStyle is %d\n", (uint8_t)currentStyle);
-}
-
-LEDControl::~LEDControl() {
-
-}
-
-void LEDControl::onClicked() {
-//        setText("Dance");
-printf("LEDControl::onClicked has been called.\n");
-    currentStyle = (LEDStyle)currentIndex;
-    printf("LEDControl onClicked: currentStyle is %d\n", (uint8_t)currentStyle);
-}
-
-LEDControl::LEDStyle LEDControl::getCurrentStyle(void) {
-    return currentStyle;
-}
-
-const char* LEDControl::getCurrentStyleString(void) {
-    return styles[int(currentStyle)].c_str();
-}
-
-LEDLabel::LEDLabel() : lvppLabel("LEDLabel", "Lights") {
-    align(LV_ALIGN_OUT_LEFT_TOP, 9, 4);
-}
-
-LEDLabel::~LEDLabel() {
-
-}
-
-
-////////////////////////////////////////
-//
-//  C y c l e C o n t r o l
-//
-////////////////////////////////////////
-
-CycleControl::CycleControl() : lvppDropdown("CycleControl") {
-    setSize(148, 42);
-    align(LV_ALIGN_BOTTOM_LEFT, 5, -38);
-    setFontSize(22);
-
-    lv_style_set_pad_ver(&style_obj, 8);
-    lv_obj_add_style(obj, &style_obj, 0);
-    setBGColor(lv_palette_darken(LV_PALETTE_BLUE, 1));
-
-    setOptions(styles);
-    setDropdownDirection(LV_DIR_TOP);
-    setCurrentIndex((uint16_t)0);
-}
-
-CycleControl::~CycleControl() {
-
-}
-
-void CycleControl::onValueChanged() {
-    curIndex = (CycleStyle) getCurrentIndex();
-}
-
-
-CPLabel::CPLabel() : lvppLabel("CPLabel", "Rotation Period") {
-    align(LV_ALIGN_BOTTOM_LEFT, 21, -102);
-}
-
-CPLabel::~CPLabel() {
-
-}
-
-
-////////////////////////////////////////
-//
-//  S e t u p C o n t r o l
-//
-////////////////////////////////////////
-
-SetupControl::SetupControl() : lvppButton("Setup", LV_SYMBOL_SETTINGS" Setup") {
-    align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);
-}
-
-SetupControl::~SetupControl() {
-
-}
-
-void SetupControl::onClicked() {
-    // Time to load the setup screen.
-    if (pSetupScreen) {
-        lv_scr_load_anim(pSetupScreen, LV_SCR_LOAD_ANIM_OVER_LEFT, 500, 0, false);
-    }
-}
-
-
-////////////////////////////////////////
-//
-//  H 2 O F u l l n e s s B a r
-//
-////////////////////////////////////////
-
-FullnessBar::FullnessBar(void) : lvppBar("H2OLevel") {
-    setSize(13, 80);
-    align(LV_ALIGN_TOP_RIGHT, -19, 20);
-    setRange(0,100);
-
-    setLabelFormat("%d%%");
-    enableLabel(LV_ALIGN_BOTTOM_MID, 3, 17);
-    setValue(20);
-}
-
-FullnessBar::~FullnessBar() {
-
-}
-
-H2OFullnessLabel::H2OFullnessLabel() : lvppLabel("H2OLabel", "Water") {
-    align(LV_ALIGN_TOP_RIGHT, -5, 3);
-}
-
-H2OFullnessLabel::~H2OFullnessLabel() {
-
-}
-
-
 ////////////////////////////////////////
 //
 //  T e m p G a u g e
@@ -320,30 +186,17 @@ TempGauge::TempGauge() : lvppArc("Temp") {
     setSize(105, 105);
 
     // Temps ranging from 60 to 105
-    lv_arc_set_range(obj, 60, 105);
+    setRange(60, 105);
+    setArcRotationAndSweep(100, 0, 200);
 
-    lv_arc_set_rotation(obj, 100);
-    lv_arc_set_bg_angles(obj, 0, 200);
     lv_obj_remove_style(obj, NULL, LV_PART_KNOB);
 //    lv_obj_clear_flag(obj, LV_OBJ_FLAG_CLICKABLE);
 
-    pLabel = lv_label_create(obj);
-    lv_obj_align_to(pLabel, obj, LV_ALIGN_CENTER, -20, -10);
+    enableValueLabel(-20, -10);
 
-    lv_style_set_text_font(&style_obj, &lv_font_montserrat_32);
-    lv_obj_add_style(obj, &style_obj, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    curValue = 65;
-    lv_arc_set_value(obj, curValue);
-    lv_label_set_text_fmt(pLabel, "%d F", curValue);
-    onValueChanged();
-}
-
-TempGauge::~TempGauge() {
-    if (pLabel) {
-        delete pLabel;
-        pLabel = nullptr;
-    }
+    setValueLabelFont(&lv_font_montserrat_32);
+    setValueLabelFormat("%d F");
+    setTemp(65);
 }
 
 void TempGauge::onValueChanged() {
@@ -351,8 +204,6 @@ void TempGauge::onValueChanged() {
     // hue range is 0-359
     // saturation and value are 0-100
     uint16_t h;
-
-    lv_label_set_text_fmt(pLabel, "%d F", curValue);
 
     // 0 = reddest
     // 20 = beginning orange
@@ -374,15 +225,12 @@ void TempGauge::onValueChanged() {
 
     lv_color_t tempColor = lv_color_hsv_to_rgb(h, 100, 100);
 
-//    lv_style_set_arc_color(&style_obj, tempColor);
-    lv_style_set_text_color(&style_obj, tempColor);
-//    lv_obj_add_style(obj, &style_obj, 0);
-
+    setValueLabelColor(tempColor);
+    setArcColor(tempColor);
 }
 
 void TempGauge::setTemp(uint8_t tempValue) {
     setValue(tempValue);
-    onValueChanged();
 }
 
 
@@ -415,8 +263,3 @@ BackgroundAreas::BackgroundAreas(void) : lvppCanvas("Backgnd", 0, 0, SDL_HOR_RES
         for (y=topYarea; y<240; y++)
             lv_canvas_set_px_color(obj, x, y, px);
 }
-
-BackgroundAreas::~BackgroundAreas() {
-
-}
-

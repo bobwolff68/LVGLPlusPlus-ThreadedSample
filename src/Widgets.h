@@ -33,21 +33,6 @@
 
 void instantiateWidgets(void);
 
-class PlusTime : public lvppButton {
-public:
-    PlusTime(void);
-    virtual ~PlusTime();
-protected:
-    void onClicked(void);
-};
-
-class SetupControl : public lvppButton {
-public:
-    SetupControl(void);
-    virtual ~SetupControl();
-    void onClicked(void);
-};
-
 class TimeStatus : public lvppButton {
 public:
     TimeStatus(void);
@@ -58,71 +43,15 @@ protected:
     lv_obj_t* shadow_label;
 };
 
-class FullnessBar : public lvppBar {
-public:
-    FullnessBar(void);
-    virtual ~FullnessBar();
-};
-
-class H2OFullnessLabel : public lvppLabel {
-public:
-    H2OFullnessLabel(void);
-    virtual ~H2OFullnessLabel();
-};
-
-class LEDControl : public lvppCycleButton {
-public:
-    LEDControl(void);
-    virtual ~LEDControl();
-
-    enum class LEDStyle : uint8_t { Off, SlowCycle, FastCycle, Walking, Jogging };
-    std::vector<std::string> styles;
-
-    void onClicked();
-    LEDStyle getCurrentStyle(void);
-    const char* getCurrentStyleString(void);
-protected:
-    LEDStyle currentStyle;
-};
-
-class LEDLabel : public lvppLabel {
-public:
-    LEDLabel(void);
-    virtual ~LEDLabel();
-};
-
-class CycleControl : public lvppDropdown {
-public:
-    CycleControl();
-    virtual ~CycleControl();
-    void onValueChanged();
-protected:
-    enum class CycleStyle : uint8_t { AllOn, OneSec, TwoSec, ThreeSec };
-    std::vector<std::string> styles { LV_SYMBOL_REFRESH " All On", LV_SYMBOL_REFRESH " 2 Secs", LV_SYMBOL_REFRESH " 3 Secs", LV_SYMBOL_REFRESH " 4 Secs" };
-    CycleControl::CycleStyle curIndex;
-};
-
-class CPLabel : public lvppLabel {
-public:
-    CPLabel(void);
-    virtual ~CPLabel();
-};
-
 class BackgroundAreas : public lvppCanvas {
 public:
     BackgroundAreas(void);
-    virtual ~BackgroundAreas();
 };
 
 
 class TempGauge : public lvppArc {
 public:
     TempGauge(void);
-    virtual ~TempGauge();
     void onValueChanged();
-    void enableLabel(const char* pText);
     void setTemp(uint8_t tempValue);
-protected:
-    lv_obj_t* pLabel;
-    lv_style_t labelStyle;
 };

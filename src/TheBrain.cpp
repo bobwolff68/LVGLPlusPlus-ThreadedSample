@@ -54,8 +54,8 @@ TheBrain::TheBrain() : LockingRoboTask("TheBrain", 1, 8192) {
     secondsRemaining = 60;
     fullPercentage = 40;
 
+    assert(pScreenMain);
     assert(pTempGauge);
-    assert(pFull);
     assert(pTimeStatus);
 
     setBaseRunDelay(200);
@@ -78,7 +78,7 @@ void TheBrain::Run() {
         fullPercentage += 5;
         if (fullPercentage > 100)
             fullPercentage = 10;
-        pFull->setValue(fullPercentage);
+        pScreenMain->setObjValue("H2OLevel", fullPercentage);
 
         secondsRemaining--;
         if (secondsRemaining <= 0) {

@@ -33,12 +33,12 @@
 // More forward declarations
 class TheBrain;
 class TempGauge;
-class FullnessBar;
 class TimeStatus;
-class CycleControl;
+class lvppScreen;
 
 extern TheBrain*       pTheBrain;
 extern TempGauge*      pTempGauge;
-extern FullnessBar*    pFull;
 extern TimeStatus*     pTimeStatus;
-extern CycleControl*   pCycleControl;
+
+extern lvppScreen*     pScreenMain;
+extern lvppScreen*     pScreenSetup;

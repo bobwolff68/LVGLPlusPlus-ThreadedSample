@@ -30,6 +30,7 @@
 
 TheBrain*  pTheBrain = nullptr;
 TempGauge* pTempGauge = nullptr;
-FullnessBar* pFull = nullptr;
-TimeStatus*  pTimeStatus = nullptr;
-CycleControl*   pCycleControl = nullptr;
+TimeStatus* pTimeStatus = nullptr;
+
+lvppScreen* pScreenMain =  nullptr;
+lvppScreen* pScreenSetup = nullptr;
