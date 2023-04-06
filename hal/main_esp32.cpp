@@ -270,24 +270,6 @@ RecalibrateTouchScreen();
 void setup() {
   mySetup();
 
-  static lv_obj_t* obj = lv_canvas_create(lv_scr_act());
-  static lv_color_t buffer[LV_CANVAS_BUF_SIZE_TRUE_COLOR(151, 101)];
-
-    lv_canvas_set_buffer(obj, buffer, 151, 101, LV_IMG_CF_TRUE_COLOR);
-    lv_obj_align(obj, LV_ALIGN_TOP_LEFT, 0, 0);
-
-    static lv_draw_rect_dsc_t dsc;
-    lv_draw_rect_dsc_init(&dsc);
-
-    dsc.radius = 8;
-    dsc.bg_opa = LV_OPA_100;
-    dsc.bg_color = lv_palette_main(LV_PALETTE_BLUE);
-    dsc.border_width = 2;
-    dsc.border_opa = LV_OPA_100;
-    dsc.border_color = lv_color_black();
-
-    lv_canvas_draw_rect(obj, 0, 0, 150, 100, &dsc);
-
 LV_LOG("Starting Widgets Instantiation.\n");
   instantiateWidgets();
 LV_LOG("Instantiation of widgets complete.\n");
