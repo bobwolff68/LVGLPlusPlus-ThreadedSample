@@ -26,7 +26,7 @@ Lastly, since TheBrain isn't threaded in the non-threaded version, the file Glob
 
 The other primary difference between the threaded and non-threaded samples are in how the LVGLPlusPlus widgets get instantiated and used. This was done intentionally to give authors a sense of the two methods. If users wish to derive their own version of widgets like lvppButton and have all their placement, sizing, and callback (via onClicked()), they can see such usage in the non-threaded sample in Widgets.cpp and Widgets.h. If, instead, they would prefer to not hassle with having many new classes defined and would prefer to simply use the lvppButton "as is" by instantiating it directly and using lambda-style callback functions and the lvppScreen concept for changing values, they should gravitate to the Threaded version for seeing how this operates inside Widgets.cpp.
 
-        NOTE: The difference in how the widgets get used in these two different methodologies has _nothing_ to do with threading or non-threading. I simply chose to use one project to show derived class usage and one project to show the other way of handling widget creation. 
+> NOTE: The difference in how the widgets get used in these two different methodologies has _nothing_ to do with threading or non-threading. I simply chose to use one project to show derived class usage and one project to show the other way of handling widget creation. 
 
 In the case of the non-threaded version, 
 ## Important Resources at the top level
