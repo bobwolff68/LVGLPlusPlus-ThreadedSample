@@ -12,6 +12,9 @@ The examples currently are functional on Mac in so-called 'native' or 'simulatio
 
 There are two different distinguishing characteristics between the samples. They both, however, produce the same end result of an automatically updating display which is also interactive.
 
+![Simulator Screenshot](sample-screenshot.png "Simulator Screenshot")
+
+
 ### Threading
 
 As the two samples are named Threaded and Non-Threaded, this is the primary difference, structurally. LVGL is not a thread-safe library at the moment and so I wanted to show how threading can be used while staying safe in this regard. Most of my projects do utilize threading for underlying sensors as well as the user interface when possible. So, there is an underlying threading class called RoboTask and its brother, LockingRoboTask. The locking version is the key or integrating with LVGL. This can be done in two ways.
