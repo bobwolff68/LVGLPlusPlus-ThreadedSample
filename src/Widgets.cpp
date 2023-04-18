@@ -53,17 +53,6 @@ void instantiateWidgets(void) {
 
     pScreenMain->addObject(&bground);
 
-    static lvppButton setupButton("Setup", LV_SYMBOL_SETTINGS" Setup");
-    setupButton.align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);
-    setupButton.setCallbackOnClicked([]() -> void {
-        // Time to load the setup screen.
-        if (pScreenSetup) {
-            pScreenSetup->activateScreen(500, LV_SCR_LOAD_ANIM_OVER_LEFT);
-        }
-    });
-
-    pScreenMain->addObject(&setupButton);
-
     static lvppBar fullnessBar("H2OLevel");
     fullnessBar.setSize(13, 80);
     fullnessBar.align(LV_ALIGN_TOP_RIGHT, -19, 20);
@@ -117,6 +106,17 @@ void instantiateWidgets(void) {
 
     pTempGauge = new TempGauge;
     pScreenMain->addObject(pTempGauge);
+
+    static lvppButton setupButton("Setup", LV_SYMBOL_SETTINGS" Setup");
+    setupButton.align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);
+    setupButton.setCallbackOnClicked([]() -> void {
+        // Time to load the setup screen.
+        if (pScreenSetup) {
+            pScreenSetup->activateScreen(500, LV_SCR_LOAD_ANIM_OVER_LEFT);
+        }
+    });
+
+    pScreenMain->addObject(&setupButton);
 
 ////////////////////////////////////////
 //
