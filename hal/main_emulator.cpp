@@ -47,11 +47,8 @@ int main(void)
 
 	hal_setup();
 
-    lv_theme_t * th = lv_theme_default_init(NULL,  /*Use the DPI, size, etc from this display*/
-                                            lv_color_make(0,0,0xf0), lv_color_make(0,10,0xc0),   /*Primary and secondary palette*/
-                                            false,    /*Light or dark mode*/
-                                            &lv_font_montserrat_18);
-//                                            &lv_font_montserrat_10, &lv_font_montserrat_14, &lv_font_montserrat_18); /*Small, normal, large fonts*/
+   lv_theme_t * th = lv_theme_default_init(NULL, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_BLUE_GREY), 
+                                                false, LV_FONT_DEFAULT);
 
     lv_disp_set_theme(NULL, th); /*Assign the theme to the display*/
 

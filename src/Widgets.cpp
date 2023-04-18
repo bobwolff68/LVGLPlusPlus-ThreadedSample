@@ -69,7 +69,7 @@ void instantiateWidgets(void) {
     fullnessBar.align(LV_ALIGN_TOP_RIGHT, -19, 20);
     fullnessBar.setRange(0,100);
     fullnessBar.setValueLabelFormat("%d%%");
-    fullnessBar.enableValueLabel(3, 17, LV_ALIGN_BOTTOM_MID);
+    fullnessBar.enableValueLabel(2, 17, LV_ALIGN_BOTTOM_MID);
     fullnessBar.setValue(20);
     fullnessBar.setAdjText("Water", 0, -50);
 

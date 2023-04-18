@@ -188,7 +188,8 @@ void lvSetup(){
 
   */
   //lv_theme_t * th = lv_theme_basic_init(disp);
-  lv_theme_t * th = lv_theme_default_init(disp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), LV_THEME_DEFAULT_DARK, LV_FONT_DEFAULT);
+  lv_theme_t * th = lv_theme_default_init(disp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_BLUE_GREY), 
+                                                false, LV_FONT_DEFAULT);
   lv_disp_set_theme(disp, th);
 
 }
