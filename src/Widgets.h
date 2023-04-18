@@ -43,12 +43,6 @@ protected:
     lv_obj_t* shadow_label;
 };
 
-class BackgroundAreas : public lvppCanvas {
-public:
-    BackgroundAreas(void);
-};
-
-
 class TempGauge : public lvppArc {
 public:
     TempGauge(void);

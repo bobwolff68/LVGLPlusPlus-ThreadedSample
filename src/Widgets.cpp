@@ -39,18 +39,30 @@
 void instantiateWidgets(void) {
     pScreenMain = new lvppScreen(lv_scr_act());
 
-    static BackgroundAreas background;
+    static lvppCanvasIndexed bground("back2", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 4);
+    const lv_coord_t topYarea = 117;
+    const lv_coord_t botXdivider = 158;
+
+    bground.addColorToIndex(lv_color_white());
+    bground.addColorToIndex(lv_color_black());
+    bground.addPaletteToIndex(LV_PALETTE_BLUE_GREY);
+
+    bground.setbgColor(lv_palette_lighten(LV_PALETTE_BLUE_GREY, 1));
+    bground.drawLineHoriz(0,topYarea, SCREEN_WIDTH, lv_color_black());
+    bground.drawLineVert(botXdivider, topYarea, SCREEN_HEIGHT-topYarea, lv_color_black());
+
+    pScreenMain->addObject(&bground);
 
     static lvppButton setupButton("Setup", LV_SYMBOL_SETTINGS" Setup");
     setupButton.align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);
     setupButton.setCallbackOnClicked([]() -> void {
         // Time to load the setup screen.
         if (pScreenSetup) {
-            pScreenSetup->ActivateScreen(500, LV_SCR_LOAD_ANIM_OVER_LEFT);
+            pScreenSetup->activateScreen(500, LV_SCR_LOAD_ANIM_OVER_LEFT);
         }
     });
 
-    pScreenMain->AddObject(&setupButton);
+    pScreenMain->addObject(&setupButton);
 
     static lvppBar fullnessBar("H2OLevel");
     fullnessBar.setSize(13, 80);
@@ -61,7 +73,7 @@ void instantiateWidgets(void) {
     fullnessBar.setValue(20);
     fullnessBar.setAdjText("Water", 0, -50);
 
-    pScreenMain->AddObject(&fullnessBar);
+    pScreenMain->addObject(&fullnessBar);
 
     printf("size of buffer for TRUE_COLOR:%d\n", LV_CANVAS_BUF_SIZE_TRUE_COLOR(320,240));
     printf("size of buffer for INDEXED 8-bit:%d\n", LV_CANVAS_BUF_SIZE_INDEXED_8BIT(320,240));
@@ -77,7 +89,7 @@ void instantiateWidgets(void) {
         pTheBrain->AddSeconds(60);
     });
 
-    pScreenMain->AddObject(&plus5);
+    pScreenMain->addObject(&plus5);
 
     static lvppCycleButton lights("Lights");
     lights.setSize(61, 28);
@@ -87,24 +99,24 @@ void instantiateWidgets(void) {
     lights.addOptions(LV_SYMBOL_SHUFFLE " Fast");
     lights.setAdjText("Lights", 0, -24);
 
-    pScreenMain->AddObject(&lights);
+    pScreenMain->addObject(&lights);
 
     static lvppDropdown dropCycle("DropCycle");
     dropCycle.setSize(148, 42);
     dropCycle.align(LV_ALIGN_BOTTOM_LEFT, 5, -40);
     dropCycle.setFontSize(22);
     dropCycle.setBGColor(lv_palette_darken(LV_PALETTE_BLUE, 1));
-    dropCycle.addOptions(LV_SYMBOL_REFRESH " All On\n" LV_SYMBOL_REFRESH " 2 Secs\n" LV_SYMBOL_REFRESH " 3 Secs\n" LV_SYMBOL_REFRESH " 4 Secs");
+    dropCycle.setOptions(LV_SYMBOL_REFRESH " All On\n" LV_SYMBOL_REFRESH " 2 Secs\n" LV_SYMBOL_REFRESH " 3 Secs\n" LV_SYMBOL_REFRESH " 4 Secs");
     dropCycle.setDropdownDirection(LV_DIR_TOP);
     dropCycle.setAdjText("Cycle Pulsing", 0, -32);
 
-    pScreenMain->AddObject(&dropCycle);
+    pScreenMain->addObject(&dropCycle);
 
     pTimeStatus = new TimeStatus;
-    pScreenMain->AddObject(pTimeStatus);
+    pScreenMain->addObject(pTimeStatus);
 
     pTempGauge = new TempGauge;
-    pScreenMain->AddObject(pTempGauge);
+    pScreenMain->addObject(pTempGauge);
 
 ////////////////////////////////////////
 //
@@ -116,16 +128,16 @@ void instantiateWidgets(void) {
     static lvppLabel hello("title", "Setup Screen Example");
     hello.align(LV_ALIGN_TOP_MID, 0, 3);
 
-    pScreenSetup->AddObject(&hello);
+    pScreenSetup->addObject(&hello);
 
     static lvppButton exitSetupButton("ExitSetup", "Exit");
     exitSetupButton.align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);
     exitSetupButton.setCallbackOnClicked([]() -> void {
         // Time to load the main screen again.
-        pScreenMain->ActivateScreen(500, LV_SCR_LOAD_ANIM_OVER_RIGHT);
+        pScreenMain->activateScreen(500, LV_SCR_LOAD_ANIM_OVER_RIGHT);
     });
 
-    pScreenSetup->AddObject(&exitSetupButton);
+    pScreenSetup->addObject(&exitSetupButton);
 
 }
 
@@ -231,35 +243,4 @@ void TempGauge::onValueChanged() {
 
 void TempGauge::setTemp(uint8_t tempValue) {
     setValue(tempValue);
-}
-
-
-////////////////////////////////////////
-//
-//  B a c k g r o u n d A r e a s
-//
-////////////////////////////////////////
-
-BackgroundAreas::BackgroundAreas(void) : lvppCanvas("Backgnd", 0, 0, SDL_HOR_RES, SDL_VER_RES) {
-    const lv_coord_t topYarea = 117;
-    const lv_coord_t botXdivider = 158;
-
-    // Top area
-    lv_coord_t x, y;
-    lv_color_t px;
-    px.full = 1;
-    
-    lv_canvas_fill_bg(obj, px, LV_OPA_COVER);
-
-    // Black index
-    px.full = 0;
-    // Draw horizontal dividing line
-    for (x = 0; x<320; x++)
-        for (y=topYarea; y<(topYarea+4); y++)
-            lv_canvas_set_px_color(obj, x, y, px);
-
-    // Draw vertical divider in lower half of display
-    for (x = botXdivider; x<botXdivider+4; x++)
-        for (y=topYarea; y<240; y++)
-            lv_canvas_set_px_color(obj, x, y, px);
 }
