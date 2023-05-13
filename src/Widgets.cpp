@@ -60,6 +60,7 @@ void instantiateWidgets(void) {
     fullnessBar.setValueLabelFormat("%d%%");
     fullnessBar.enableValueLabel(2, 17, LV_ALIGN_BOTTOM_MID);
     fullnessBar.setValue(20);
+    fullnessBar.setColorGradient(lv_palette_darken(LV_PALETTE_BLUE, 3), lv_palette_lighten(LV_PALETTE_BROWN, 1), LV_GRAD_DIR_VER);
     fullnessBar.setAdjText("Water", 0, -50);
 
     pScreenMain->addObject(&fullnessBar);
@@ -83,12 +84,25 @@ void instantiateWidgets(void) {
     static lvppCycleButton lights("Lights");
     lights.setSize(61, 28);
     lights.align(LV_ALIGN_TOP_LEFT, 6, 35);
-    lights.addOptions(LV_SYMBOL_POWER " Off");
-    lights.addOptions(LV_SYMBOL_SHUFFLE " Slow");
-    lights.addOptions(LV_SYMBOL_SHUFFLE " Fast");
+    lights.addOptionWithID(LV_SYMBOL_POWER " Off", 500);
+    lights.addOptionWithID(LV_SYMBOL_SHUFFLE " Slow", 700);
+    lights.addOptionWithID(LV_SYMBOL_SHUFFLE " Fast", 900);
     lights.setAdjText("Lights", 0, -24);
+    lights.setCallbackOnClicked([]() {
+        uint64_t id = lights.getSelectedID();
+        uint16_t index = lights.getSelectedIndex();
+        printf("Cycle Button changed. New index:%d, new ID value is: %llu\n", index, id);
+    });
 
     pScreenMain->addObject(&lights);
+
+    LV_IMG_DECLARE(arrow_upward);
+    static lvppImage arrow("arrow");
+    arrow.setSize(40,40);
+    arrow.setImage(&arrow_upward);
+    arrow.align(LV_ALIGN_TOP_MID, 75, 1);
+    arrow.setRotation(150);
+    pScreenMain->addObject(&arrow);
 
     static lvppDropdown dropCycle("DropCycle");
     dropCycle.setSize(148, 42);
@@ -106,6 +120,19 @@ void instantiateWidgets(void) {
 
     pTempGauge = new TempGauge;
     pScreenMain->addObject(pTempGauge);
+
+    static lvppSwitch camSwitch("cam");
+    camSwitch.align(LV_ALIGN_LEFT_MID, 10, -35);
+    camSwitch.setSize(40, 20);
+    camSwitch.setAdjText("Camera", 0, 20);
+    camSwitch.setCheckedState(true);
+//    camSwitch.setEnabled(false);
+    camSwitch.setCallbackOnValueChanged([]() {
+        if (camSwitch.getCheckedState())
+            printf("CamSwitch is now ON.\n");
+        else
+            printf("CamSwitch is now OFF.\n");
+    });
 
     static lvppButton setupButton("Setup", LV_SYMBOL_SETTINGS" Setup");
     setupButton.align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);
@@ -129,6 +156,36 @@ void instantiateWidgets(void) {
     hello.align(LV_ALIGN_TOP_MID, 0, 3);
 
     pScreenSetup->addObject(&hello);
+
+    lvppBase::setDefaultFont(&lv_font_montserrat_22);
+    lvppBase::setDefaultBGColor(lv_palette_lighten(LV_PALETTE_GREEN, 2));
+    lvppBase::setDefaultTextColor(lv_palette_darken(LV_PALETTE_DEEP_ORANGE, 1));
+
+    static lvppLabel biggerDefLabel("def1", "Test 22pt orange/green");
+    biggerDefLabel.align(LV_ALIGN_CENTER, 0, -60);
+    biggerDefLabel.setColorGradient(lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_AMBER), LV_GRAD_DIR_HOR);
+//    biggerDefLabel.setBGColor(lv_palette_lighten(LV_PALETTE_AMBER, 2));
+//    biggerDefLabel.setTextColor(lv_palette_lighten(LV_PALETTE_BROWN, 2));
+    pScreenSetup->addObject(&biggerDefLabel);
+
+    lvppBase::removeDefaultBGColor();
+
+    static lvppButton bigButton("def2");
+    bigButton.align(LV_ALIGN_CENTER, 0, 40);
+    bigButton.setText("Big Default");
+    bigButton.setColorGradient(lv_palette_main(LV_PALETTE_LIGHT_BLUE), lv_palette_main(LV_PALETTE_LIGHT_GREEN), LV_GRAD_DIR_HOR);
+    bigButton.setAdjText("Adjacent label", 0, 35);
+    bigButton.setAdjBGColor(lv_palette_lighten(LV_PALETTE_BLUE, 2));
+    pScreenSetup->addObject(&bigButton);
+
+    lvppBase::setDefaultBGColor(lv_palette_darken(LV_PALETTE_TEAL, 1));
+
+    static lvppBar bar1("defslider");
+    bar1.setSize(15, 100);
+    bar1.align(LV_ALIGN_BOTTOM_LEFT, 5, -5);
+    bar1.setColorGradient(lv_palette_main(LV_PALETTE_AMBER), lv_palette_main(LV_PALETTE_INDIGO), LV_GRAD_DIR_VER);
+    bar1.setValue(35);
+    pScreenSetup->addObject(&bar1);
 
     static lvppButton exitSetupButton("ExitSetup", "Exit");
     exitSetupButton.align(LV_ALIGN_BOTTOM_RIGHT, -3, -3);

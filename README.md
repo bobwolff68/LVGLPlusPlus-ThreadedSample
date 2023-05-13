@@ -61,11 +61,9 @@ Ultimately I think the non-threaded sample is simpler to understand, but the thr
 
 ## To Do Items
 
-- Once the main library is public, it will be added to the platformio registry. At that point, the platformio.ini file needs to be updated to no longer point directly at the github URL but instead properly reference the pio registry lib_deps library. This will make auto-upgrading seamless.
-  - Currently, if the main library is updated and you've already built the sample project, there is no way for the sample project to know of the update and the (clunky) method to forcing this to be pulled again is by running a helper script called `./cleanLib.sh` which simply removes the underlying library from the .pio/libdeps/* folders. PlatformIO's library registry actually uses the library.json manifest to know when updates are made and compares these as part of the build process pre-build.
+- Keep up with LVGLPlusPlus advancements
+  - Add an animation co-class / helper example to allow easy access to animations from LVGL
+
 - Document the SDL bit on the Mac (homebrew and associated platform.ini items)
 - Document use of lv_drivers in LVGLPlusPlus and how/why it is present in esp32 build
 
-## Looking for digital design and software engineering design services?
-
-- Shameless plug: As of Spring 2023 I'm open to contract work and happy to discuss projects. Get in touch - b o b dot w o l f f 6 8 at g m a i l dot c o m
